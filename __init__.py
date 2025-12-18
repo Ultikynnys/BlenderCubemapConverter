@@ -317,57 +317,15 @@ def inpaint_image(img, mask, erosion=0):
     
     inpainted_img = img.copy()
     
-    # Fill invalid pixels using the gathered indices (NN Initialization)
+    # Fill invalid pixels using the gathered indices
     if img.ndim == 2:
         inpainted_img = img[row_indices, col_indices]
     else:
         # We apply the same spatial mapping to each channel
         for c in range(img.shape[2]):
-             channel = img[:, :, c]
-             inpainted_img[:, :, c] = channel[row_indices, col_indices]
-    
-    # --------------------------------------------------------
-    # Smooth Diffusion Step (Simulating Telea/Navier-Stokes)
-    # --------------------------------------------------------
-    # We use the NN result as a solid initialization, then iteratively blur the
-    # invalid regions to smooth out the "streaky" artifacts of NN.
-    # This creates a result closer to fluid-based inpainting.
-    
-    diffusion_steps = 15  # Number of smoothing iterations
-    sigma = 1.5           # Blur radius
-    
-    # Only diffuse if we actually have invalid regions (which we do if we are here)
-    if diffusion_steps > 0:
-        print(f"Applying smooth diffusion ({diffusion_steps} steps)...")
-        
-        # Working buffer
-        smoothed = inpainted_img.copy()
-        
-        for i in range(diffusion_steps):
-            # Blur the entire image (Scipy's gaussian_filter is efficient)
-            if img.ndim == 2:
-                blurred = scipy.ndimage.gaussian_filter(smoothed, sigma=sigma)
-            else:
-                 # Blur per channel? multidimensional gaussian_filter handles 3D if we specify axis?
-                 # Default blurs all axes. We want to blur Y and X, but NOT Channels (axis 2).
-                 blurred = scipy.ndimage.gaussian_filter(smoothed, sigma=[sigma, sigma, 0])
-
-            # The Core Logic:
-            # 1. In the invalid region (where we want inpainting), take the BLURRED value.
-            # 2. In the valid region (original image), KEEP the original value STRICTLY.
-            #    (Actually, we keep the previous iteration's valid pixels... which are constant)
-            
-            # Update invalid regions with the blurred version of the previous step.
-            # This propagates smooth colors from the valid boundary outwards.
-            smoothed[~mask] = blurred[~mask]
-            
-            # Ensure valid regions remain untouched (reset to original/NN valid pixels)
-            # Actually, `inpainted_img` has the original valid pixels in the `mask` area anyway.
-            # So we only need to write to ~mask.
-            # But the blur bleeds valid into invalid, and invalid (streaks) into invalid.
-            # Over time, streaks dissolve into gradients.
-        
-        return smoothed
+            channel = img[:, :, c]
+            # map_coordinates or direct indexing? Direct indexing is simpler for NN.
+            inpainted_img[:, :, c] = channel[row_indices, col_indices]
         
     return inpainted_img
 
