@@ -1,0 +1,36 @@
+# Blender Extension Manifest
+# https://docs.blender.org/manual/en/latest/extensions/getting_started.html
+
+schema_version = "1.0.0"
+
+id = "cubemap_converter"
+name = "Cubemap Converter"
+version = "1.6.6"
+tagline = "Converts between cubemap images and equirectangular maps"
+maintainer = "Plastered_Crab and Ultikynnys"
+type = "add-on"
+
+# Blender version requirements
+blender_version_min = "4.2.0"
+
+# License
+license = ["SPDX:GPL-3.0-or-later"]
+
+# Website/documentation
+website = "https://github.com/Ultikynnys/BlenderCubemapConverter"
+
+# Categories
+tags = ["3D View", "Image"]
+
+# Wheels - Python dependencies
+# Note: numpy and scipy are bundled with Blender, but if needed externally:
+wheels = [
+  "./wheels/scipy-1.16.3-cp311-cp311-win_amd64.whl",
+  "./wheels/scipy-1.16.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+  "./wheels/scipy-1.16.3-cp311-cp311-macosx_12_0_arm64.whl",
+]
+
+
+# Permissions (optional)
+# [permissions]
+# files = "Import/export image files"
