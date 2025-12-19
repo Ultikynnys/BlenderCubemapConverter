@@ -5,7 +5,7 @@ schema_version = "1.0.0"
 
 id = "cubemap_converter"
 name = "Cubemap Converter"
-version = "1.6.6"
+version = "1.6.7"
 tagline = "Converts between cubemap images and equirectangular maps"
 maintainer = "Plastered_Crab and Ultikynnys"
 type = "add-on"
